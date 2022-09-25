@@ -1,1 +1,2 @@
-/home/matt/.config/zsh/plugins/fish-abbrs/fish-abbrs.zsh
+0=${(%):-%N}
+source ${0:A:h}/zsh-abbrs.zsh
