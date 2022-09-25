@@ -1,1 +1,1 @@
-# --help
+# Fish style abbreviations for ZSH
