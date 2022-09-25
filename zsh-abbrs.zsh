@@ -72,7 +72,9 @@ zle -N expand-abbr-and-accept-line
 
 # Replace the default accept-line function with
 # the expand-abbr-and-accept-line function
-zle -N accept-line expand-abbr-and-accept-line
+# zle -N accept-line expand-abbr-and-accept-line
 
 bindkey -M isearch " "      magic-space                             # Space (during searches)
 bindkey " " expand-abbr
+bindkey "^J" expand-abbr-and-accept-line
+bindkey "^M" expand-abbr-and-accept-line
