@@ -1,0 +1,1 @@
+/home/matt/.config/zsh/plugins/fish-abbrs/fish-abbrs.zsh
