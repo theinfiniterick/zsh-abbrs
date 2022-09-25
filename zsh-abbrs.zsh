@@ -3,16 +3,12 @@
 # -------------------------- #
 
 # declare a global unique array for abbreviation names
-typeset -gaU abbrs
+typeset -g -a -U _abbrs
 
 function abbr() {
 
-    if [ ! -v abbrs ]; then
-        typeset -aU abbrs
-    fi
-
     if [ "$#" -eq 0 ]; then
-        for i in ${abbrs[@]}; do
+        for i in ${_abbrs[@]}; do
             builtin alias "$i"
         done
         return 0
@@ -21,7 +17,7 @@ function abbr() {
     for arg in "$@"; do
         if [[ $arg == *"="* ]]; then
             builtin alias "${arg}"
-            abbrs+=("${arg%%\=*}")
+            _abbrs+=("${arg%%\=*}")
         else
             builtin alias "${arg}"
         fi
@@ -36,15 +32,11 @@ function unabbr() {
         return 1
     fi
 
-    if [ ! -v abbrs ]; then
-        typeset -aU abbrs
-    fi
-
     # loop through arguments
     for arg in "$@"; do
 
         # if argument not in abbrs then return error
-        if [[ ${abbrs[(ie)$arg]} -gt ${#abbrs} ]]; then
+        if [[ ${_abbrs[(ie)$arg]} -gt ${#_abbrs} ]]; then
             echo "${funcstack[-1]}: no such hash table element: ${arg}"
             return 1
         fi
@@ -53,7 +45,7 @@ function unabbr() {
         builtin unalias "${arg}"
 
         # remove item from abbrs array
-        abbrs=("${abbrs[@]/$arg}")
+        _abbrs=("${_abbrs[@]/$arg}")
 
     done
 
@@ -61,7 +53,7 @@ function unabbr() {
 
 # Expand any aliases in the current line buffer
 function expand-abbr() {
-    if [[ $LBUFFER =~ "\<(${(j:|:)abbrs})\$" ]]; then
+    if [[ $LBUFFER =~ "\<(${(j:|:)_abbrs})\$" ]]; then
         zle _expand_alias
         zle expand-word
     fi
@@ -80,9 +72,7 @@ zle -N expand-abbr-and-accept-line
 
 # Replace the default accept-line function with
 # the expand-abbr-and-accept-line function
-# zle -N accept-line expand-abbr-and-accept-line
+zle -N accept-line expand-abbr-and-accept-line
 
 bindkey -M isearch " "      magic-space                             # Space (during searches)
 bindkey " " expand-abbr
-bindkey "^J" expand-abbr-and-accept-line
-bindkey "^M" expand-abbr-and-accept-line
